@@ -1,6 +1,6 @@
 {
   "scripts": {
-     "build": "npm install -D webpack-cli"
+     "build": "npx webpack"
   },
   "devDependencies": {
     "@eslint/js": "^9.21.0",
