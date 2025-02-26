@@ -16,9 +16,10 @@ module.exports = {
       module: /styles\.scss/,
     },
   ],
-  plugins: [new HtmlWebpackPlugin({
-    template: 'index.html',
-  })],
+  plugins: [
+    new HtmlWebpackPlugin({
+      template: 'index.html',
+    })],
   module: {
     rules: [
       {
