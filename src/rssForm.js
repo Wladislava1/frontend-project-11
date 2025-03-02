@@ -13,16 +13,17 @@ export default function rssForm() {
 
   const linkSchema = yup.object().shape({
     url: yup.string()
-      .url('Ссылка должна быть валидным URL')
+      .url(1)
       .required()
-      .test('unique-url', 'RSS уже существует', (value) => !watchedState.urls.includes(value)),
+      .test('unique-url', 2, (value) => !state.urls.includes(value)),
   });
 
   const validateForm = (data) => linkSchema.validate(data)
     .then(() => {
       state.urls.push(data.url);
-      watchedState.error = 'RSS успешно загружен';
-      console.log(watchedState.urls);
+      watchedState.error = 0;
+      console.log(state.urls);
+      console.log(watchedState.error);
     })
     .catch((error) => {
       watchedState.error = error.message;
