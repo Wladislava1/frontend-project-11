@@ -24,6 +24,47 @@ const renderErr = (errorCode, i18nInstance) => {
   }
 };
 
+const createFeedItem = (feed) => {
+  const elInListFeeds = document.createElement('li');
+  elInListFeeds.classList.add('list-group-item', 'border-0', 'border-end-0');
+  const titleFeed = document.createElement('h3');
+  titleFeed.classList.add('h6', 'm-0');
+  titleFeed.textContent = feed.title;
+  const descriptionFeed = document.createElement('p');
+  descriptionFeed.classList.add('m-0', 'small', 'text-black-50');
+  descriptionFeed.textContent = feed.description;
+  elInListFeeds.append(titleFeed, descriptionFeed);
+  return elInListFeeds;
+};
+
+const renderFeed = (feeds, i18nInstance) => {
+  console.log('renderFeed вызван');
+  const feedContainer = document.querySelector('.feeds');
+  console.log(feedContainer);
+  feedContainer.innerHTML = '';
+
+  const card = document.createElement('div');
+  card.classList.add('card', 'border-0');
+  const cardBody = document.createElement('div');
+  cardBody.classList.add('card-body');
+  const titleFeeds = document.createElement('h2');
+  titleFeeds.classList.add('card-title', 'h4');
+  titleFeeds.textContent = i18nInstance.t('feeds');
+  cardBody.appendChild(titleFeeds);
+
+  const listFeeds = document.createElement('ul');
+  listFeeds.classList.add('list-group', 'border-0', 'rounded-0');
+
+  feeds.forEach((feed) => {
+    const feedItem = createFeedItem(feed);
+    listFeeds.appendChild(feedItem);
+  });
+
+  cardBody.appendChild(listFeeds);
+  card.appendChild(cardBody);
+  feedContainer.appendChild(card);
+};
+
 let i18nInstance;
 
 const initI18n = () => new Promise((resolve, reject) => {
@@ -47,7 +88,12 @@ const initI18n = () => new Promise((resolve, reject) => {
 export default function initView(state) {
   const watchedState = onChange(state, (path) => {
     if (path === 'error') {
+      console.log('onChange вызван для пути:', path);
       renderErr(watchedState.error, i18nInstance);
+    }
+    if (path === 'feeds') {
+      console.log('onChange вызван для пути:', path);
+      renderFeed(watchedState.feeds, i18nInstance);
     }
   });
   return watchedState;
