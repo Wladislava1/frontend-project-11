@@ -4,5 +4,6 @@ export default {
     code_one: 'The link must be a valid URL',
     code_two: 'RSS already exists',
     feeds: 'Feeds',
+    posts: 'Posts',
   },
 };
