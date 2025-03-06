@@ -37,6 +37,26 @@ const createFeedItem = (feed) => {
   return elInListFeeds;
 };
 
+const createPostItem = (post) => {
+  const elInListPosts = document.createElement('li');
+  elInListPosts.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-start', 'border-0', 'border-end-0');
+  const linkForPost = document.createElement('a');
+  linkForPost.href = post.url;
+  linkForPost.classList.add('fw-bold');
+  linkForPost.setAttribute('data-id', post.id);
+  linkForPost.setAttribute('target', '_blank');
+  linkForPost.setAttribute('rel', 'noopener noreferrer');
+  linkForPost.textContent = post.title;
+  const button = document.createElement('button');
+  button.classList.add('btn', 'btn-outline-primary', 'btn-sm');
+  button.setAttribute('data-id', post.id);
+  button.setAttribute('data-bs-toggle', 'modal');
+  button.setAttribute('data-bs-target', '#modal');
+  button.textContent = 'Просмотр';
+  elInListPosts.append(linkForPost, button);
+  return elInListPosts;
+};
+
 const renderFeed = (feeds, i18nInstance) => {
   console.log('renderFeed вызван');
   const feedContainer = document.querySelector('.feeds');
@@ -63,6 +83,49 @@ const renderFeed = (feeds, i18nInstance) => {
   cardBody.appendChild(listFeeds);
   card.appendChild(cardBody);
   feedContainer.appendChild(card);
+};
+
+const renderPosts = (posts, i18nInstance) => {
+  const postsContainer = document.querySelector('.posts');
+  const card = document.createElement('div');
+  card.classList.add('card', 'border-0');
+  const cardBody = document.createElement('div');
+  cardBody.classList.add('card-body');
+  const titlePosts = document.createElement('h2');
+  titlePosts.classList.add('card-title', 'h4');
+  titlePosts.textContent = i18nInstance.t('posts');
+  cardBody.appendChild(titlePosts);
+  const listPosts = document.createElement('ul');
+  listPosts.classList.add('list-group', 'border-0', 'rounded-0');
+
+  posts.forEach((post) => {
+    const postItem = createPostItem(post);
+    listPosts.appendChild(postItem);
+  });
+
+  cardBody.appendChild(listPosts);
+  card.appendChild(cardBody);
+  postsContainer.appendChild(card);
+};
+
+const renderWindow = (viewPost) => {
+  const body = document.querySelector('body');
+  const containerShow = body.querySelector('.fade');
+  const titleModal = body.querySelector('.modal-title');
+  body.style.overflow = '';
+  body.style.paddingRight = '';
+  containerShow.classList.remove('show');
+  containerShow.style.display = '';
+  containerShow.removeAttribute('aria-modal');
+  titleModal.innerHTML = '';
+  if (viewPost !== null) {
+    body.style.overflow = 'hidden';
+    body.style.paddingRight = '17px';
+    containerShow.classList.add('show');
+    containerShow.style.display = 'block';
+    containerShow.setAttribute('aria-modal', true);
+    titleModal.textContent = viewPost;
+  }
 };
 
 let i18nInstance;
@@ -94,6 +157,14 @@ export default function initView(state) {
     if (path === 'feeds') {
       console.log('onChange вызван для пути:', path);
       renderFeed(watchedState.feeds, i18nInstance);
+    }
+    if (path === 'posts') {
+      console.log('onChange вызван для пути:', path);
+      renderPosts(watchedState.posts, i18nInstance);
+    }
+    if (path === 'viewPost') {
+      console.log('onChange вызван для пути:', path);
+      renderWindow(watchedState.viewPost);
     }
   });
   return watchedState;
