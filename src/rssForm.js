@@ -23,7 +23,7 @@ export default function rssForm() {
 
   const getFeedsAndPosts = (errorCode, url) => {
     if (errorCode === 0) {
-      fetch(`https://allorigins.hexlet.app/get?url=${encodeURIComponent(url)}`)
+      fetch(`https://allorigins.hexlet.app/get?url=${encodeURIComponent(url)}&_cache=false`)
         .then((response) => {
           if (response.ok) return response.json();
           throw new Error('Network response was not ok.');
