@@ -14,11 +14,18 @@ export default function rssForm() {
 
   const watchedState = initView(state);
 
+  // const isExistsHead = (url) => {
+  // fetch(`https://allorigins.hexlet.app/get?url=${encodeURIComponent(url)}&_cache=false`)
+  // .then((response) => response.ok)
+  // .catch(() => false);
+  // };
+
   const linkSchema = yup.object().shape({
     url: yup.string()
       .url(1)
       .required()
       .test('unique-url', 2, (value) => !state.feeds.some((item) => item.url === value)),
+    // .test('available-page', 3, (value) => isExistsHead(value)),
   });
 
   const getFeedsAndPosts = (errorCode, url) => {
@@ -60,6 +67,38 @@ export default function rssForm() {
     }
   };
 
+  const intervalUpdateFeeds = () => {
+    state.feeds.forEach((feed) => {
+      fetch(`https://allorigins.hexlet.app/get?url=${encodeURIComponent(feed.url)}&_cache=false`)
+        .then((response) => response.json())
+        .then((data) => {
+          const parser = new DOMParser();
+          const doc = parser.parseFromString(data.contents, 'application/xml');
+          const postsItem = doc.querySelectorAll('item');
+
+          const newPosts = Array.from(postsItem).map((item) => {
+            const titlePost = item.querySelector('title')?.textContent;
+            const linkPost = item.querySelector('link')?.textContent;
+            return {
+              id: uniqid(),
+              feedId: feed.id,
+              title: titlePost,
+              url: linkPost,
+            };
+          });
+          const existingPostUrls = new Set(state.posts.map((post) => post.url));
+          const uniquePosts = newPosts.filter((post) => !existingPostUrls.has(post.url));
+
+          if (uniquePosts.length > 0) {
+            state.posts = [...uniquePosts, ...state.posts];
+            watchedState.posts = [...state.posts];
+          }
+        })
+        .catch((error) => console.error('Ошибка обновления фидов:', error));
+    });
+    setTimeout(intervalUpdateFeeds, 5000);
+  };
+
   const validateForm = (data) => linkSchema.validate(data)
     .then(() => {
       const idFeedPost = uniqid();
@@ -69,6 +108,8 @@ export default function rssForm() {
       console.log(state.feeds);
       console.log(watchedState.error);
       getFeedsAndPosts(watchedState.error, data.url);
+      intervalUpdateFeeds();
+      console.log(state.posts);
     })
     .catch((error) => {
       watchedState.error = error.message;
