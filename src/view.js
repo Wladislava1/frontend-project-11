@@ -21,6 +21,10 @@ const renderErr = (errorCode, i18nInstance) => {
     errMessage.textContent = i18nInstance.t('code_two');
     input.classList.add('is-invalid');
     errMessage.classList.add('text-danger');
+  } else if (errorCode === 3) {
+    errMessage.textContent = i18nInstance.t('code_tree');
+    input.classList.add('is-invalid');
+    errMessage.classList.add('text-danger');
   }
 };
 
@@ -87,6 +91,7 @@ const renderFeed = (feeds, i18nInstance) => {
 
 const renderPosts = (posts, i18nInstance) => {
   const postsContainer = document.querySelector('.posts');
+  postsContainer.innerHTML = '';
   const card = document.createElement('div');
   card.classList.add('card', 'border-0');
   const cardBody = document.createElement('div');
