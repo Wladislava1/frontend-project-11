@@ -7,25 +7,18 @@ import initView from './view.js';
 export default function rssForm() {
   const state = {
     feeds: [], // id url title description
-    posts: [],
-    error: null,
+    posts: [], // id feedId show
     viewPost: null,
+    error: null,
   };
 
   const watchedState = initView(state);
-
-  // const isExistsHead = (url) => {
-  // fetch(`https://allorigins.hexlet.app/get?url=${encodeURIComponent(url)}&_cache=false`)
-  // .then((response) => response.ok)
-  // .catch(() => false);
-  // };
 
   const linkSchema = yup.object().shape({
     url: yup.string()
       .url(1)
       .required()
       .test('unique-url', 2, (value) => !state.feeds.some((item) => item.url === value)),
-    // .test('available-page', 3, (value) => isExistsHead(value)),
   });
 
   const getFeedsAndPosts = (errorCode, url) => {
@@ -56,6 +49,7 @@ export default function rssForm() {
               feedId,
               title: titlePost,
               url: linkPost,
+              show: true,
             };
           });
           state.posts = [...newPosts, ...state.posts];
@@ -103,7 +97,7 @@ export default function rssForm() {
     .then(() => {
       const idFeedPost = uniqid();
       state.feeds.push({ id: idFeedPost, url: data.url });
-      state.posts.unshift({ id: uniqid(), feedId: idFeedPost });
+      state.posts.unshift({ id: uniqid(), feedId: idFeedPost, show: true });
       watchedState.error = 0;
       console.log(state.feeds);
       console.log(watchedState.error);
@@ -126,13 +120,22 @@ export default function rssForm() {
 
   const containerPosts = document.querySelector('.posts');
   containerPosts.addEventListener('click', (e) => {
-    e.preventDefault();
-    if (e.target.tagName === 'BUTTON') {
-      const link = e.target.previousElementSibling;
-      if (link && link.tagName === 'A') {
-        const title = link.textContent;
-        watchedState.viewPost = title;
-      }
+    const post = e.target.closest('li');
+    if (!post) return;
+
+    const link = post.querySelector('a');
+    if (!link) return;
+
+    const indexPost = state.posts.findIndex((item) => item.url === link.getAttribute('href'));
+    if (indexPost !== -1) {
+      state.posts[indexPost].show = false;
     }
+    if (e.target.classList.contains('post-link')) {
+      window.open(link.getAttribute('href'), '_blank');
+    } else if (e.target.classList.contains('post-button')) {
+      console.log(`Клик по кнопке ${link.textContent}`);
+      watchedState.viewPost = state.posts[indexPost].title;
+    }
+    watchedState.posts = [...state.posts];
   });
 }

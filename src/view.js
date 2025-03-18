@@ -47,6 +47,11 @@ const createPostItem = (post) => {
   const linkForPost = document.createElement('a');
   linkForPost.href = post.url;
   linkForPost.classList.add('fw-bold');
+  if (post.show === false) {
+    linkForPost.classList.remove('fw-bold');
+    linkForPost.classList.add('fw-normal');
+    linkForPost.classList.add('link-secondary');
+  }
   linkForPost.setAttribute('data-id', post.id);
   linkForPost.setAttribute('target', '_blank');
   linkForPost.setAttribute('rel', 'noopener noreferrer');
@@ -57,7 +62,8 @@ const createPostItem = (post) => {
   button.setAttribute('data-bs-toggle', 'modal');
   button.setAttribute('data-bs-target', '#modal');
   button.textContent = 'Просмотр';
-  elInListPosts.append(linkForPost, button);
+  elInListPosts.appendChild(linkForPost);
+  elInListPosts.appendChild(button);
   return elInListPosts;
 };
 
@@ -114,21 +120,26 @@ const renderPosts = (posts, i18nInstance) => {
 };
 
 const renderWindow = (viewPost) => {
+  console.log('вызван renderWindow');
   const body = document.querySelector('body');
   const containerShow = body.querySelector('.fade');
-  const titleModal = body.querySelector('.modal-title');
+
   body.style.overflow = '';
   body.style.paddingRight = '';
   containerShow.classList.remove('show');
   containerShow.style.display = '';
-  containerShow.removeAttribute('aria-modal');
-  titleModal.innerHTML = '';
+  containerShow.setAttribute('aria-hidden', true);
+
   if (viewPost !== null) {
     body.style.overflow = 'hidden';
     body.style.paddingRight = '17px';
     containerShow.classList.add('show');
     containerShow.style.display = 'block';
+
+    containerShow.removeAttribute('aria-hidden');
     containerShow.setAttribute('aria-modal', true);
+
+    const titleModal = containerShow.querySelector('.modal-title');
     titleModal.textContent = viewPost;
   }
 };
