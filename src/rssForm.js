@@ -7,8 +7,11 @@ import initView from './view.js';
 export default function rssForm() {
   const state = {
     feeds: [], // id url title description
-    posts: [], // id feedId show
-    viewPost: null,
+    posts: [], // id feedId title description url show
+    viewPost: {
+      title: null,
+      description: null,
+    },
     error: null,
   };
 
@@ -43,11 +46,13 @@ export default function rssForm() {
           const feedId = state.feeds[indexFeed].id;
           const newPosts = Array.from(postsItem).map((item) => {
             const titlePost = item.querySelector('title')?.textContent;
+            const descriptionPost = item.querySelector('description')?.textContent;
             const linkPost = item.querySelector('link')?.textContent;
             return {
               id: uniqid(),
               feedId,
               title: titlePost,
+              description: descriptionPost,
               url: linkPost,
               show: true,
             };
@@ -72,11 +77,13 @@ export default function rssForm() {
 
           const newPosts = Array.from(postsItem).map((item) => {
             const titlePost = item.querySelector('title')?.textContent;
+            const descriptionPost = item.querySelector('description')?.textContent;
             const linkPost = item.querySelector('link')?.textContent;
             return {
               id: uniqid(),
               feedId: feed.id,
               title: titlePost,
+              description: descriptionPost,
               url: linkPost,
             };
           });
@@ -132,9 +139,11 @@ export default function rssForm() {
     }
     if (e.target.classList.contains('post-link')) {
       window.open(link.getAttribute('href'), '_blank');
-    } else if (e.target.classList.contains('post-button')) {
+    }
+    if (e.target.classList.contains('btn-sm')) {
       console.log(`Клик по кнопке ${link.textContent}`);
-      watchedState.viewPost = state.posts[indexPost].title;
+      watchedState.viewPost.title = state.posts[indexPost].title;
+      watchedState.viewPost.description = state.posts[indexPost].description;
     }
     watchedState.posts = [...state.posts];
   });

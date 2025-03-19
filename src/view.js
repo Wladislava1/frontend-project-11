@@ -128,19 +128,26 @@ const renderWindow = (viewPost) => {
   body.style.paddingRight = '';
   containerShow.classList.remove('show');
   containerShow.style.display = '';
-  containerShow.setAttribute('aria-hidden', true);
 
-  if (viewPost !== null) {
+  if (viewPost.title !== null) {
     body.style.overflow = 'hidden';
     body.style.paddingRight = '17px';
     containerShow.classList.add('show');
     containerShow.style.display = 'block';
-
-    containerShow.removeAttribute('aria-hidden');
     containerShow.setAttribute('aria-modal', true);
 
     const titleModal = containerShow.querySelector('.modal-title');
-    titleModal.textContent = viewPost;
+    titleModal.textContent = viewPost.title;
+  }
+  if (viewPost.description !== null) {
+    body.style.overflow = 'hidden';
+    body.style.paddingRight = '17px';
+    containerShow.classList.add('show');
+    containerShow.style.display = 'block';
+    containerShow.setAttribute('aria-modal', true);
+
+    const descriptionModal = containerShow.querySelector('.text-break');
+    descriptionModal.textContent = viewPost.description;
   }
 };
 
@@ -178,7 +185,7 @@ export default function initView(state) {
       console.log('onChange вызван для пути:', path);
       renderPosts(watchedState.posts, i18nInstance);
     }
-    if (path === 'viewPost') {
+    if (path === 'viewPost.title' || path === 'viewPost.description') {
       console.log('onChange вызван для пути:', path);
       renderWindow(watchedState.viewPost);
     }
