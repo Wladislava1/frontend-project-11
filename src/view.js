@@ -9,6 +9,7 @@ const renderErr = (errorCode, i18nInstance) => {
   errMessage.textContent = '';
   errMessage.classList.remove('text-success');
   errMessage.classList.remove('text-danger');
+
   if (errorCode === 0 || errorCode === null) {
     errMessage.textContent = i18nInstance.t('code_zero');
     input.classList.remove('is-invalid');
@@ -23,6 +24,10 @@ const renderErr = (errorCode, i18nInstance) => {
     errMessage.classList.add('text-danger');
   } else if (errorCode === 3) {
     errMessage.textContent = i18nInstance.t('code_tree');
+    input.classList.add('is-invalid');
+    errMessage.classList.add('text-danger');
+  } else if (errorCode === 4) {
+    errMessage.textContent = i18nInstance.t('code_four');
     input.classList.add('is-invalid');
     errMessage.classList.add('text-danger');
   }
