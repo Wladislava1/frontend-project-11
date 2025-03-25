@@ -9,24 +9,24 @@ const renderErr = (errorCode, i18nInstance) => {
   errMessage.textContent = '';
   errMessage.classList.remove('text-success');
   errMessage.classList.remove('text-danger');
-
-  if (errorCode === 0 || errorCode === null) {
+  const code = Number(errorCode);
+  if (code === 0 || code === null) {
     errMessage.textContent = i18nInstance.t('code_zero');
     input.classList.remove('is-invalid');
     errMessage.classList.add('text-success');
-  } else if (errorCode === 1) {
+  } else if (code === 1) {
     errMessage.textContent = i18nInstance.t('code_one');
     input.classList.add('is-invalid');
     errMessage.classList.add('text-danger');
-  } else if (errorCode === 2) {
+  } else if (code === 2) {
     errMessage.textContent = i18nInstance.t('code_two');
     input.classList.add('is-invalid');
     errMessage.classList.add('text-danger');
-  } else if (errorCode === 3) {
+  } else if (code === 3) {
     errMessage.textContent = i18nInstance.t('code_tree');
     input.classList.add('is-invalid');
     errMessage.classList.add('text-danger');
-  } else if (errorCode === 4) {
+  } else if (code === 4) {
     errMessage.textContent = i18nInstance.t('code_four');
     input.classList.add('is-invalid');
     errMessage.classList.add('text-danger');
