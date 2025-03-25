@@ -39,3 +39,36 @@ export const createPostItem = (post) => {
   elInListPosts.appendChild(button);
   return elInListPosts;
 };
+
+export const createFeedsOrPosts = (elements, i18nInstance, elementCreated) => {
+  const elementContainer = document.querySelector(`.${elementCreated}`);
+  elementContainer.innerHTML = '';
+  const card = document.createElement('div');
+  card.classList.add('card', 'border-0');
+  const cardBody = document.createElement('div');
+  cardBody.classList.add('card-body');
+  const titleElement = document.createElement('h2');
+  titleElement.classList.add('card-title', 'h4');
+  titleElement.textContent = i18nInstance.t(elementCreated);
+  cardBody.appendChild(titleElement);
+
+  const listElements = document.createElement('ul');
+  listElements.classList.add('list-group', 'border-0', 'rounded-0');
+
+  if (elementCreated === 'feeds') {
+    elements.forEach((feed) => {
+      const feedItem = createFeedItem(feed);
+      listElements.appendChild(feedItem);
+    });
+  } else if (elementCreated === 'posts') {
+    elements.forEach((post) => {
+      const postItem = createPostItem(post);
+      if (postItem !== null) {
+        listElements.appendChild(postItem);
+      }
+    });
+  }
+  cardBody.appendChild(listElements);
+  card.appendChild(cardBody);
+  elementContainer.appendChild(card);
+};

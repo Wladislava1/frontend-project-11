@@ -1,4 +1,4 @@
-import { createFeedItem, createPostItem } from './renderUtils.js';
+import { createFeedsOrPosts } from './renderUtils.js';
 
 export const renderErr = (errorCode, i18nInstance) => {
   const input = document.querySelector('input[id="url-input"]');
@@ -11,81 +11,30 @@ export const renderErr = (errorCode, i18nInstance) => {
     errMessage.textContent = i18nInstance.t('code_zero');
     input.classList.remove('is-invalid');
     errMessage.classList.add('text-success');
-  } else if (code === 1) {
-    errMessage.textContent = i18nInstance.t('code_one');
-    input.classList.add('is-invalid');
-    errMessage.classList.add('text-danger');
-  } else if (code === 2) {
-    errMessage.textContent = i18nInstance.t('code_two');
-    input.classList.add('is-invalid');
-    errMessage.classList.add('text-danger');
-  } else if (code === 3) {
-    errMessage.textContent = i18nInstance.t('code_tree');
-    input.classList.add('is-invalid');
-    errMessage.classList.add('text-danger');
-  } else if (code === 4) {
-    errMessage.textContent = i18nInstance.t('code_four');
+  } else {
+    if (code === 1) {
+      errMessage.textContent = i18nInstance.t('code_one');
+    } else if (code === 2) {
+      errMessage.textContent = i18nInstance.t('code_two');
+    } else if (code === 3) {
+      errMessage.textContent = i18nInstance.t('code_tree');
+    } else if (code === 4) {
+      errMessage.textContent = i18nInstance.t('code_four');
+    }
     input.classList.add('is-invalid');
     errMessage.classList.add('text-danger');
   }
 };
 
 export const renderFeed = (feeds, i18nInstance) => {
-  console.log('renderFeed вызван');
-  const feedContainer = document.querySelector('.feeds');
-  console.log(feedContainer);
-  feedContainer.innerHTML = '';
-
-  const card = document.createElement('div');
-  card.classList.add('card', 'border-0');
-  const cardBody = document.createElement('div');
-  cardBody.classList.add('card-body');
-  const titleFeeds = document.createElement('h2');
-  titleFeeds.classList.add('card-title', 'h4');
-  titleFeeds.textContent = i18nInstance.t('feeds');
-  cardBody.appendChild(titleFeeds);
-
-  const listFeeds = document.createElement('ul');
-  listFeeds.classList.add('list-group', 'border-0', 'rounded-0');
-
-  feeds.forEach((feed) => {
-    const feedItem = createFeedItem(feed);
-    listFeeds.appendChild(feedItem);
-  });
-
-  cardBody.appendChild(listFeeds);
-  card.appendChild(cardBody);
-  feedContainer.appendChild(card);
+  createFeedsOrPosts(feeds, i18nInstance, 'feeds');
 };
 
 export const renderPosts = (posts, i18nInstance) => {
-  const postsContainer = document.querySelector('.posts');
-  postsContainer.innerHTML = '';
-  const card = document.createElement('div');
-  card.classList.add('card', 'border-0');
-  const cardBody = document.createElement('div');
-  cardBody.classList.add('card-body');
-  const titlePosts = document.createElement('h2');
-  titlePosts.classList.add('card-title', 'h4');
-  titlePosts.textContent = i18nInstance.t('posts');
-  cardBody.appendChild(titlePosts);
-  const listPosts = document.createElement('ul');
-  listPosts.classList.add('list-group', 'border-0', 'rounded-0');
-
-  posts.forEach((post) => {
-    const postItem = createPostItem(post);
-    if (postItem !== null) {
-      listPosts.appendChild(postItem);
-    }
-  });
-
-  cardBody.appendChild(listPosts);
-  card.appendChild(cardBody);
-  postsContainer.appendChild(card);
+  createFeedsOrPosts(posts, i18nInstance, 'posts');
 };
 
 export const renderWindow = (viewPost) => {
-  console.log('вызван renderWindow');
   const body = document.querySelector('body');
   const containerShow = body.querySelector('.fade');
 
