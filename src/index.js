@@ -1,6 +1,6 @@
 import './styles.scss';
 import 'bootstrap';
-import initView from './view/view.js';
+import initView from './view/index.js';
 import getSchema from './shema.js';
 import { createPost, initialState, createFeed } from './state.js';
 import { fetchRssFeed, parseRssFeed } from './parser.js';

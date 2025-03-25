@@ -1,4 +1,4 @@
-import { createFeedItem, createPostItem } from './renderUI.js';
+import { createFeedItem, createPostItem } from './renderUtils.js';
 
 export const renderErr = (errorCode, i18nInstance) => {
   const input = document.querySelector('input[id="url-input"]');

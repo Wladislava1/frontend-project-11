@@ -12,6 +12,8 @@ export default function initView(state) {
 
   initI18n().then((instance) => {
     i18nInstance = instance;
+  }).catch((error) => {
+    console.error('Ошибка при инициализации i18n:', error);
   });
 
   const watchedState = onChange(state, (path) => {

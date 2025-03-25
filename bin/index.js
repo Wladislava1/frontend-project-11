@@ -1,3 +1,3 @@
-import rssForm from '../src/rssForm.js';
+import rssForm from '../src/index.js';
 
 rssForm();
