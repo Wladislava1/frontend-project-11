@@ -47,6 +47,9 @@ const createFeedItem = (feed) => {
 };
 
 const createPostItem = (post) => {
+  if (!post.url || !post.title) {
+    return null;
+  }
   const elInListPosts = document.createElement('li');
   elInListPosts.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-start', 'border-0', 'border-end-0');
   const linkForPost = document.createElement('a');
@@ -116,7 +119,9 @@ const renderPosts = (posts, i18nInstance) => {
 
   posts.forEach((post) => {
     const postItem = createPostItem(post);
-    listPosts.appendChild(postItem);
+    if (postItem !== null) {
+      listPosts.appendChild(postItem);
+    }
   });
 
   cardBody.appendChild(listPosts);
