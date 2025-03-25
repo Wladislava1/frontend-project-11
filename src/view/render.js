@@ -1,9 +1,6 @@
-import onChange from 'on-change';
-import i18next from 'i18next';
-import ru from './language/ru.js';
-import en from './language/en.js';
+import { createFeedItem, createPostItem } from './renderUI.js';
 
-const renderErr = (errorCode, i18nInstance) => {
+export const renderErr = (errorCode, i18nInstance) => {
   const input = document.querySelector('input[id="url-input"]');
   const errMessage = document.querySelector('.feedback');
   errMessage.textContent = '';
@@ -33,49 +30,7 @@ const renderErr = (errorCode, i18nInstance) => {
   }
 };
 
-const createFeedItem = (feed) => {
-  const elInListFeeds = document.createElement('li');
-  elInListFeeds.classList.add('list-group-item', 'border-0', 'border-end-0');
-  const titleFeed = document.createElement('h3');
-  titleFeed.classList.add('h6', 'm-0');
-  titleFeed.textContent = feed.title;
-  const descriptionFeed = document.createElement('p');
-  descriptionFeed.classList.add('m-0', 'small', 'text-black-50');
-  descriptionFeed.textContent = feed.description;
-  elInListFeeds.append(titleFeed, descriptionFeed);
-  return elInListFeeds;
-};
-
-const createPostItem = (post) => {
-  if (!post.url || !post.title) {
-    return null;
-  }
-  const elInListPosts = document.createElement('li');
-  elInListPosts.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-start', 'border-0', 'border-end-0');
-  const linkForPost = document.createElement('a');
-  linkForPost.href = post.url;
-  linkForPost.classList.add('fw-bold');
-  if (post.show === false) {
-    linkForPost.classList.remove('fw-bold');
-    linkForPost.classList.add('fw-normal');
-    linkForPost.classList.add('link-secondary');
-  }
-  linkForPost.setAttribute('data-id', post.id);
-  linkForPost.setAttribute('target', '_blank');
-  linkForPost.setAttribute('rel', 'noopener noreferrer');
-  linkForPost.textContent = post.title;
-  const button = document.createElement('button');
-  button.classList.add('btn', 'btn-outline-primary', 'btn-sm');
-  button.setAttribute('data-id', post.id);
-  button.setAttribute('data-bs-toggle', 'modal');
-  button.setAttribute('data-bs-target', '#modal');
-  button.textContent = 'Просмотр';
-  elInListPosts.appendChild(linkForPost);
-  elInListPosts.appendChild(button);
-  return elInListPosts;
-};
-
-const renderFeed = (feeds, i18nInstance) => {
+export const renderFeed = (feeds, i18nInstance) => {
   console.log('renderFeed вызван');
   const feedContainer = document.querySelector('.feeds');
   console.log(feedContainer);
@@ -103,7 +58,7 @@ const renderFeed = (feeds, i18nInstance) => {
   feedContainer.appendChild(card);
 };
 
-const renderPosts = (posts, i18nInstance) => {
+export const renderPosts = (posts, i18nInstance) => {
   const postsContainer = document.querySelector('.posts');
   postsContainer.innerHTML = '';
   const card = document.createElement('div');
@@ -129,7 +84,7 @@ const renderPosts = (posts, i18nInstance) => {
   postsContainer.appendChild(card);
 };
 
-const renderWindow = (viewPost) => {
+export const renderWindow = (viewPost) => {
   console.log('вызван renderWindow');
   const body = document.querySelector('body');
   const containerShow = body.querySelector('.fade');
@@ -160,47 +115,3 @@ const renderWindow = (viewPost) => {
     descriptionModal.textContent = viewPost.description;
   }
 };
-
-let i18nInstance;
-
-const initI18n = () => new Promise((resolve, reject) => {
-  i18nInstance = i18next.createInstance();
-  i18nInstance.init({
-    lng: 'ru',
-    debug: true,
-    resources: {
-      ru: { translation: ru.translation },
-      en: { translation: en.translation },
-    },
-  })
-    .then(() => {
-      resolve(i18nInstance);
-    })
-    .catch((error) => {
-      reject(error);
-    });
-});
-
-export default function initView(state) {
-  const watchedState = onChange(state, (path) => {
-    if (path === 'error') {
-      console.log('onChange вызван для пути:', path);
-      renderErr(watchedState.error, i18nInstance);
-    }
-    if (path === 'feeds') {
-      console.log('onChange вызван для пути:', path);
-      renderFeed(watchedState.feeds, i18nInstance);
-    }
-    if (path === 'posts') {
-      console.log('onChange вызван для пути:', path);
-      renderPosts(watchedState.posts, i18nInstance);
-    }
-    if (path === 'viewPost.title' || path === 'viewPost.description') {
-      console.log('onChange вызван для пути:', path);
-      renderWindow(watchedState.viewPost);
-    }
-  });
-  return watchedState;
-}
-
-initI18n();

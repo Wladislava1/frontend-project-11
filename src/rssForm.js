@@ -1,6 +1,6 @@
 import './styles.scss';
 import 'bootstrap';
-import initView from './view.js';
+import initView from './view/view.js';
 import getSchema from './shema.js';
 import { createPost, initialState, createFeed } from './state.js';
 import { fetchRssFeed, parseRssFeed } from './parser.js';
@@ -67,6 +67,7 @@ export default function rssForm() {
         buttonSubmit.disabled = false;
       });
   });
+
   const containerPosts = document.querySelector('.posts');
   containerPosts.addEventListener('click', (e) => {
     const post = e.target.closest('li');
