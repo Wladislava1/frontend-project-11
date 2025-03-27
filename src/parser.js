@@ -1,9 +1,28 @@
 import PROXY_URL from './config.js';
 
-export const fetchRssFeed = (url) => fetch(`${PROXY_URL}?url=${encodeURIComponent(url)}&_cache=false`)
+const fetchWithTimeout = (url, timeout = 10000) => {
+  const timeoutPromise = new Promise((_, reject) => {
+    setTimeout(() => reject(new Error('NETWORK_ERROR')), timeout);
+  });
+
+  return Promise.race([
+    fetch(url),
+    timeoutPromise,
+  ]);
+};
+
+export const fetchRssFeed = (url) => fetchWithTimeout(`${PROXY_URL}?url=${encodeURIComponent(url)}&_cache=false`)
   .then((response) => {
-    if (response.ok) return response.json();
-    throw new Error('Ошибка сети');
+    if (response.ok) {
+      return response.json();
+    }
+    throw new Error(`Ошибка: ${response.status}`);
+  })
+  .catch((error) => {
+    if (error.message === 'NETWORK_ERROR') {
+      throw new Error(4);
+    }
+    throw error;
   });
 
 export const parseRssFeed = (contents) => {
@@ -12,7 +31,7 @@ export const parseRssFeed = (contents) => {
     const doc = parser.parseFromString(contents, 'application/xml');
     const parserError = doc.querySelector('parsererror');
     if (parserError) {
-      throw new Error('Ошибка парсинга XML');
+      throw new Error(3);
     }
     const titleFeed = doc.querySelector('channel > title')?.textContent;
     const descriptionFeed = doc.querySelector('channel > description')?.textContent;

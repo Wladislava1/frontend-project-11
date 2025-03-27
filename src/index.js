@@ -11,48 +11,51 @@ export default function rssForm() {
   const watchedState = initView(state);
   const linkSchema = getSchema(watchedState);
 
-  const getFeedsAndPosts = (errorCode, url) => {
-    if (errorCode === 0) {
-      fetchRssFeed(url)
-        .then((data) => {
-          const { titleFeed, descriptionFeed, posts } = parseRssFeed(data.contents);
-          const indexFeed = state.feeds.findIndex((item) => item.url === url);
+  const getFeedsAndPosts = (url) => fetchRssFeed(url)
+    .then((data) => {
+      const { titleFeed, descriptionFeed, posts } = parseRssFeed(data.contents);
+      const indexFeed = state.feeds.findIndex((item) => item.url === url);
 
-          if (indexFeed !== -1) {
-            state.feeds[indexFeed].title = titleFeed;
-            state.feeds[indexFeed].description = descriptionFeed;
-          }
+      if (indexFeed !== -1) {
+        state.feeds[indexFeed].title = titleFeed;
+        state.feeds[indexFeed].description = descriptionFeed;
+      }
 
-          const feedId = state.feeds[indexFeed].id;
-          const newPosts = posts.map((post) => createPost(
-            feedId,
-            post.title,
-            post.description,
-            post.url,
-          ));
+      const feedId = state.feeds[indexFeed].id;
+      const newPosts = posts.map((post) => createPost(
+        feedId,
+        post.title,
+        post.description,
+        post.url,
+      ));
 
-          state.posts = [...newPosts, ...state.posts];
-          watchedState.feeds = [...state.feeds];
-          watchedState.posts = [...state.posts];
-        });
-    }
-  };
+      state.posts = [...newPosts, ...state.posts];
+      watchedState.feeds = [...state.feeds];
+      watchedState.posts = [...state.posts];
+      watchedState.error = 0;
+    })
+    .catch((error) => {
+      watchedState.error = error.message;
+      console.log(error.message);
+    });
 
   const validateForm = (data) => linkSchema.validate(data)
     .then(() => {
       const newFeed = createFeed(data.url);
       state.feeds.push(newFeed);
       state.posts.unshift(createPost(newFeed.id));
-      watchedState.error = 0;
-      console.log(state.feeds);
-      console.log(watchedState.error);
-      getFeedsAndPosts(watchedState.error, data.url);
-      intervalUpdateFeeds(state, watchedState);
-      console.log(state.posts);
+
+      return getFeedsAndPosts(data.url)
+        .then(() => {
+          intervalUpdateFeeds(state, watchedState);
+          console.log(state.posts);
+          console.log(state.feeds);
+        });
     })
     .catch((error) => {
       watchedState.error = error.message;
       console.log(error.message);
+      throw error;
     });
 
   const formInput = document.querySelector('.rss-form');
