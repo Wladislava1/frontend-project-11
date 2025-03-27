@@ -83,9 +83,6 @@ export default function rssForm() {
     if (indexPost !== -1) {
       state.posts[indexPost].show = false;
     }
-    if (e.target.classList.contains('post-link')) {
-      window.open(link.getAttribute('href'), '_blank');
-    }
     if (e.target.classList.contains('btn-sm')) {
       console.log(`Клик по кнопке ${link.textContent}`);
       watchedState.viewPost.title = state.posts[indexPost].title;
