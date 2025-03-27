@@ -11,7 +11,9 @@ const fetchWithTimeout = (url, timeout = 10000) => {
   ]);
 };
 
-export const fetchRssFeed = (url) => fetchWithTimeout(`${PROXY_URL}?url=${encodeURIComponent(url)}&_cache=false`)
+export const fetchRssFeed = (url) => fetchWithTimeout(`${PROXY_URL}?url=${encodeURIComponent(url)}`, {
+  cache: 'no-store',
+})
   .then((response) => {
     if (response.ok) {
       return response.json();
