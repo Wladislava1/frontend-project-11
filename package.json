@@ -1,60 +1,32 @@
 {
-
   "name": "@hexlet/code",
-
   "scripts": {
-
     "build": "npm install -D webpack-cli"
-
   },
-
   "devDependencies": {
-
     "@eslint/js": "^9.21.0",
-
+    "@playwright/test": "^1.51.1",
+    "@types/node": "^22.13.13",
     "css-loader": "^7.1.2",
-
     "eslint": "^8.57.1",
-
     "eslint-config-airbnb-base": "^15.0.0",
-
     "eslint-plugin-import": "^2.31.0",
-
     "globals": "^16.0.0",
-
     "html-webpack-plugin": "^5.6.3",
-
     "postcss-loader": "^8.1.1",
-
     "sass": "^1.85.0",
-
     "sass-loader": "^16.0.5",
-
     "style-loader": "^4.0.0",
-
     "webpack": "^5.98.0",
-
     "webpack-cli": "^6.0.1",
-
     "webpack-dev-server": "^5.2.0"
-
   },
-
   "author": "Wladislawa Orlowa",
-
   "dependencies": {
-
     "bootstrap": "^5.3.3",
-
     "i18next": "^24.2.2",
-
     "on-change": "^5.0.1",
-
     "uniqid": "^5.4.0",
-
     "yup": "^1.6.1"
-
   }
-
 }
-
