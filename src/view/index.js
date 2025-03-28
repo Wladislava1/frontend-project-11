@@ -26,7 +26,7 @@ export default function initView(state) {
     if (path === 'posts') {
       renderPosts(watchedState.posts, i18nInstance);
     }
-    if (path === 'viewPost.title' || path === 'viewPost.description') {
+    if (path === 'viewPost.title' || path === 'viewPost.description' || path === 'viewPost.url') {
       renderWindow(watchedState.viewPost);
     }
   });

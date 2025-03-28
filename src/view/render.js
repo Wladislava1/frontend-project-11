@@ -37,11 +37,13 @@ export const renderPosts = (posts, i18nInstance) => {
 export const renderWindow = (viewPost) => {
   const body = document.querySelector('body');
   const containerShow = body.querySelector('.fade');
+  const link = containerShow.querySelector('.full-article');
 
   body.style.overflow = '';
   body.style.paddingRight = '';
   containerShow.classList.remove('show');
   containerShow.style.display = '';
+  link.setAttribute('href', '#');
 
   if (viewPost.title !== null) {
     body.style.overflow = 'hidden';
@@ -62,5 +64,8 @@ export const renderWindow = (viewPost) => {
 
     const descriptionModal = containerShow.querySelector('.text-break');
     descriptionModal.textContent = viewPost.description;
+  }
+  if (viewPost.url !== null) {
+    link.setAttribute('href', viewPost.url);
   }
 };

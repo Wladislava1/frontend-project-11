@@ -6,6 +6,7 @@ export const initialState = {
   viewPost: {
     title: null,
     description: null,
+    url: null,
   },
   error: null,
 };

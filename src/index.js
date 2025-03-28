@@ -87,6 +87,7 @@ export default function rssForm() {
       console.log(`Клик по кнопке ${link.textContent}`);
       watchedState.viewPost.title = state.posts[indexPost].title;
       watchedState.viewPost.description = state.posts[indexPost].description;
+      watchedState.viewPost.url = link.getAttribute('href');
     }
     watchedState.posts = [...state.posts];
   });
