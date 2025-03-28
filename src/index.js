@@ -91,4 +91,17 @@ export default function rssForm() {
     }
     watchedState.posts = [...state.posts];
   });
+
+  const containerShow = document.querySelector('.fade');
+  const textBreak = containerShow.querySelector('.text-break');
+  const closeModalButtonText = containerShow.querySelector('.close');
+  const closeModalButtonKrest = containerShow.querySelector('.btn-secondary');
+  closeModalButtonText.addEventListener('click', (e) => {
+    e.preventDefault();
+    textBreak.textContent = '';
+  });
+  closeModalButtonKrest.addEventListener('click', (e) => {
+    e.preventDefault();
+    textBreak.textContent = '';
+  });
 }
