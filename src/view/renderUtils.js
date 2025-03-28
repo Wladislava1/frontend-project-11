@@ -40,7 +40,7 @@ export const createPostItem = (post) => {
   return elInListPosts;
 };
 
-export const createFeedsOrPosts = (elements, i18nInstance, elementCreated) => {
+export const createContainerFeedsOrPosts = (elements, i18nInstance, elementCreated) => {
   const elementContainer = document.querySelector(`.${elementCreated}`);
   elementContainer.innerHTML = '';
   const card = document.createElement('div');

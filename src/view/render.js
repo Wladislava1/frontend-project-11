@@ -1,4 +1,4 @@
-import { createFeedsOrPosts } from './renderUtils.js';
+import { createContainerFeedsOrPosts } from './renderUtils.js';
 
 export const renderErr = (errorCode, i18nInstance) => {
   const input = document.querySelector('input[id="url-input"]');
@@ -27,11 +27,11 @@ export const renderErr = (errorCode, i18nInstance) => {
 };
 
 export const renderFeed = (feeds, i18nInstance) => {
-  createFeedsOrPosts(feeds, i18nInstance, 'feeds');
+  createContainerFeedsOrPosts(feeds, i18nInstance, 'feeds');
 };
 
 export const renderPosts = (posts, i18nInstance) => {
-  createFeedsOrPosts(posts, i18nInstance, 'posts');
+  createContainerFeedsOrPosts(posts, i18nInstance, 'posts');
 };
 
 export const renderWindow = (viewPost) => {

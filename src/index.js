@@ -48,8 +48,6 @@ export default function rssForm() {
       return getFeedsAndPosts(data.url)
         .then(() => {
           intervalUpdateFeeds(state, watchedState);
-          console.log(state.posts);
-          console.log(state.feeds);
         });
     })
     .catch((error) => {
@@ -84,7 +82,6 @@ export default function rssForm() {
       state.posts[indexPost].show = false;
     }
     if (e.target.classList.contains('btn-sm')) {
-      console.log(`Клик по кнопке ${link.textContent}`);
       watchedState.viewPost.title = state.posts[indexPost].title;
       watchedState.viewPost.description = state.posts[indexPost].description;
       watchedState.viewPost.url = link.getAttribute('href');
