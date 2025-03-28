@@ -67,6 +67,7 @@ export default function rssForm() {
     validateForm({ url })
       .finally(() => {
         buttonSubmit.disabled = false;
+        urlInput.value = '';
       });
   });
 
