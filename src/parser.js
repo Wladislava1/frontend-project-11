@@ -1,6 +1,6 @@
 import PROXY_URL from './config.js';
 
-const fetchWithTimeout = (url, timeout = 5000) => {
+const fetchWithTimeout = (url, timeout = 10000) => {
   const timeoutPromise = new Promise((_, reject) => {
     setTimeout(() => reject(new Error('NETWORK_ERROR')), timeout);
   });
@@ -28,7 +28,7 @@ export const fetchRssFeed = (url) => fetchWithTimeout(`${PROXY_URL}?url=${encode
     if (error.message === 'NETWORK_ERROR') {
       throw new Error(4);
     }
-    throw error;
+    throw new Error(4);
   });
 
 export const parseRssFeed = (contents) => {
