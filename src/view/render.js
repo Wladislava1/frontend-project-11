@@ -43,29 +43,27 @@ export const renderWindow = (viewPost) => {
   body.style.paddingRight = '';
   containerShow.classList.remove('show');
   containerShow.style.display = '';
+  containerShow.removeAttribute('aria-modal');
   link.setAttribute('href', '#');
+  const titleModal = containerShow.querySelector('.modal-title');
+  titleModal.textContent = '';
+  const descriptionModal = containerShow.querySelector('.text-break');
+  descriptionModal.textContent = '';
 
-  if (viewPost.title !== null) {
+  if (viewPost.title || viewPost.description || viewPost.url) {
     body.style.overflow = 'hidden';
     body.style.paddingRight = '17px';
     containerShow.classList.add('show');
     containerShow.style.display = 'block';
     containerShow.setAttribute('aria-modal', true);
-
-    const titleModal = containerShow.querySelector('.modal-title');
+  }
+  if (viewPost.title) {
     titleModal.textContent = viewPost.title;
   }
-  if (viewPost.description !== null) {
-    body.style.overflow = 'hidden';
-    body.style.paddingRight = '17px';
-    containerShow.classList.add('show');
-    containerShow.style.display = 'block';
-    containerShow.setAttribute('aria-modal', true);
-
-    const descriptionModal = containerShow.querySelector('.text-break');
+  if (viewPost.description) {
     descriptionModal.textContent = viewPost.description;
   }
-  if (viewPost.url !== null) {
+  if (viewPost.url) {
     link.setAttribute('href', viewPost.url);
   }
 };
