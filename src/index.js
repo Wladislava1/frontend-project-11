@@ -55,7 +55,6 @@ export default function rssForm() {
     .catch((error) => {
       watchedState.error = error.message;
       console.log(error.message);
-      throw error;
     });
 
   const formInput = document.querySelector('.rss-form');

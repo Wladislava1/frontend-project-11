@@ -6,7 +6,7 @@ export const renderErr = (errorCode, i18nInstance) => {
   errMessage.textContent = '';
   errMessage.classList.remove('text-success');
   errMessage.classList.remove('text-danger');
-  const code = Number(errorCode);
+  const code = parseInt(errorCode, 10);
   if (code === 0 || code === null) {
     errMessage.textContent = i18nInstance.t('code_zero');
     input.classList.remove('is-invalid');
