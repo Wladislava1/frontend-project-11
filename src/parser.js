@@ -1,6 +1,6 @@
 import PROXY_URL from './config.js';
 
-const fetchWithTimeout = (url, timeout = 10000) => {
+const fetchWithTimeout = (url, timeout = 5000) => {
   const timeoutPromise = new Promise((_, reject) => {
     setTimeout(() => reject(new Error('NETWORK_ERROR')), timeout);
   });
