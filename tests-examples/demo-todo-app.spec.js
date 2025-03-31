@@ -1,4 +1,9 @@
+/* eslint-disable no-return-await */
+/* eslint-disable no-restricted-syntax */
+/* eslint-disable no-await-in-loop */
+/* eslint-disable no-use-before-define */
 // @ts-check
+
 import { test, expect } from '@playwright/test';
 
 test.beforeEach(async ({ page }) => {
