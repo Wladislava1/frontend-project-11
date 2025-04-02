@@ -5,7 +5,6 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.21.0",
-    "@playwright/test": "^1.51.1",
     "@types/node": "^22.13.13",
     "css-loader": "^7.1.2",
     "eslint": "^8.57.1",
