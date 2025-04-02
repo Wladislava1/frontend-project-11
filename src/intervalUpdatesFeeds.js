@@ -26,7 +26,10 @@ const intervalUpdateFeeds = (state, watchedState) => {
       .catch((error) => console.error('Ошибка обновления фидов:', error)));
 
     Promise.all(feedPromises).finally(() => {
-      setTimeout(() => intervalUpdateFeeds(updatedState, updatedWatchedState), 5000);
+      state.posts = updatedState.posts;
+      watchedState.posts = updatedWatchedState.posts;
+
+      setTimeout(() => intervalUpdateFeeds(state, watchedState), 5000);
     });
   }
 };
