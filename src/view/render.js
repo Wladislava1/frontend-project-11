@@ -30,8 +30,8 @@ export const renderFeed = (feeds, i18nInstance) => {
   createContainerFeedsOrPosts(feeds, i18nInstance, 'feeds');
 };
 
-export const renderPosts = (posts, i18nInstance) => {
-  createContainerFeedsOrPosts(posts, i18nInstance, 'posts');
+export const renderPosts = (posts, viewedPosts, i18nInstance) => {
+  createContainerFeedsOrPosts(posts, i18nInstance, 'posts', viewedPosts);
 };
 
 export const renderWindow = (viewPost) => {

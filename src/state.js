@@ -2,11 +2,14 @@ import uniqid from 'uniqid';
 
 export const initialState = {
   feeds: [], // id, url, title, description
-  posts: [], // id, feedId, title, description, url, show
+  posts: [], // id, feedId, title, description, url
   viewPost: {
     title: null,
     description: null,
     url: null,
+  },
+  uiState: {
+    viewedPosts: [],
   },
   error: null,
 };

@@ -11,7 +11,7 @@ export const createFeedItem = (feed) => {
   return elInListFeeds;
 };
 
-export const createPostItem = (post) => {
+export const createPostItem = (post, viewedPosts) => {
   if (!post.url || !post.title) {
     return null;
   }
@@ -20,7 +20,8 @@ export const createPostItem = (post) => {
   const linkForPost = document.createElement('a');
   linkForPost.href = post.url;
   linkForPost.classList.add('fw-bold');
-  if (post.show === false) {
+  const isViewed = viewedPosts.some((viewedPost) => viewedPost.url === post.url && viewedPost.visibility === 'hidden');
+  if (isViewed) {
     linkForPost.classList.remove('fw-bold');
     linkForPost.classList.add('fw-normal');
     linkForPost.classList.add('link-secondary');
@@ -40,7 +41,12 @@ export const createPostItem = (post) => {
   return elInListPosts;
 };
 
-export const createContainerFeedsOrPosts = (elements, i18nInstance, elementCreated) => {
+export const createContainerFeedsOrPosts = (
+  elements,
+  i18nInstance,
+  elementCreated,
+  viewedPosts = [],
+) => {
   const elementContainer = document.querySelector(`.${elementCreated}`);
   elementContainer.innerHTML = '';
   const card = document.createElement('div');
@@ -62,7 +68,7 @@ export const createContainerFeedsOrPosts = (elements, i18nInstance, elementCreat
     });
   } else if (elementCreated === 'posts') {
     elements.forEach((post) => {
-      const postItem = createPostItem(post);
+      const postItem = createPostItem(post, viewedPosts);
       if (postItem !== null) {
         listElements.appendChild(postItem);
       }

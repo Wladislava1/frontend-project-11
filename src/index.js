@@ -15,15 +15,17 @@ export default function rssForm() {
     .then((data) => {
       const { titleFeed, descriptionFeed, posts } = parseRssFeed(data.contents);
       const existingFeed = state.feeds.find((feed) => feed.url === url);
+      console.log(existingFeed);
 
       if (existingFeed) {
         existingFeed.title = titleFeed;
         existingFeed.description = descriptionFeed;
       } else {
         const newFeed = createFeed(url, titleFeed, descriptionFeed);
-        state.feeds.push(newFeed);
-        state.posts.unshift(createPost(newFeed.id));
+        state.feeds = [...state.feeds, newFeed];
+        state.posts = [createPost(newFeed.id), ...state.posts];
       }
+      console.log(state.feeds);
       const feedId = state.feeds.find((feed) => feed.url === url).id;
       const newPosts = posts.map((post) => createPost(
         feedId,
@@ -40,14 +42,13 @@ export default function rssForm() {
     })
     .catch((error) => {
       watchedState.error = error.message;
-      console.log(error.message);
+      throw error;
     });
 
   const validateForm = (data) => linkSchema.validate(data)
     .then(() => true)
     .catch((error) => {
       watchedState.error = error.message;
-      console.log(error.message);
       return false;
     });
 
@@ -77,16 +78,21 @@ export default function rssForm() {
     const link = post.querySelector('a');
     if (!link) return;
 
-    const indexPost = state.posts.findIndex((item) => item.url === link.getAttribute('href'));
-    if (indexPost !== -1) {
-      state.posts[indexPost].show = false;
+    const postUrl = link.getAttribute('href');
+    const foundPost = state.posts.find((item) => item.url === postUrl);
+    console.log(`foundPost = ${foundPost}`);
+    if (foundPost) {
+      const isViewed = state.uiState.viewedPosts.some((viewedPost) => viewedPost.url === postUrl);
+      if (!isViewed) {
+        state.uiState.viewedPosts = [...state.uiState.viewedPosts, { url: foundPost.url, visibility: 'hidden' }];
+      }
     }
     if (e.target.classList.contains('btn-sm')) {
-      watchedState.viewPost.title = state.posts[indexPost].title;
-      watchedState.viewPost.description = state.posts[indexPost].description;
+      watchedState.viewPost.title = foundPost.title;
+      watchedState.viewPost.description = foundPost.description;
       watchedState.viewPost.url = link.getAttribute('href');
     }
-    watchedState.posts = [...state.posts];
+    watchedState.uiState.viewedPosts = [...state.uiState.viewedPosts];
   });
 
   const containerShow = document.querySelector('.fade');

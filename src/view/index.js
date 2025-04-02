@@ -9,7 +9,6 @@ import initI18n from './i18n.js';
 
 export default function initView(state) {
   let i18nInstance;
-
   initI18n().then((instance) => {
     i18nInstance = instance;
   }).catch((error) => {
@@ -23,8 +22,8 @@ export default function initView(state) {
     if (path === 'feeds') {
       renderFeed(watchedState.feeds, i18nInstance);
     }
-    if (path === 'posts') {
-      renderPosts(watchedState.posts, i18nInstance);
+    if (path === 'posts' || path === 'uiState.viewedPosts') {
+      renderPosts(watchedState.posts, watchedState.uiState.viewedPosts, i18nInstance);
     }
     if (path === 'viewPost.title' || path === 'viewPost.description' || path === 'viewPost.url') {
       renderWindow(watchedState.viewPost);
