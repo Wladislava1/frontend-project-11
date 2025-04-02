@@ -44,9 +44,11 @@ export default function rssForm() {
     });
 
   const validateForm = (data) => linkSchema.validate(data)
+    .then(() => true)
     .catch((error) => {
       watchedState.error = error.message;
       console.log(error.message);
+      return false;
     });
 
   const formInput = document.querySelector('.rss-form');
@@ -57,11 +59,12 @@ export default function rssForm() {
     const urlInput = document.querySelector('input[id="url-input"]');
     const url = urlInput.value.trim();
     validateForm({ url })
-      .then(() => {
-        getFeedsAndPosts(url);
-      })
-      .finally(() => {
-        buttonSubmit.disabled = false;
+      .then((isValid) => {
+        if (!isValid) return;
+        getFeedsAndPosts(url)
+          .finally(() => {
+            buttonSubmit.disabled = false;
+          });
         urlInput.value = '';
       });
   });
