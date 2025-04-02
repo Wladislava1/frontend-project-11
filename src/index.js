@@ -39,17 +39,19 @@ export default function rssForm() {
       console.log(error.message);
     });
 
-  const validateForm = (data) => linkSchema.validate(data)
-    .then(() => {
-      const newFeed = createFeed(data.url);
-      state.feeds.push(newFeed);
-      state.posts.unshift(createPost(newFeed.id));
+  const handleFeedProcessing = (url) => {
+    const newFeed = createFeed(url);
+    state.feeds.push(newFeed);
+    state.posts.unshift(createPost(newFeed.id));
 
-      return getFeedsAndPosts(data.url)
-        .then(() => {
-          intervalUpdateFeeds(state, watchedState);
-        });
-    })
+    return getFeedsAndPosts(url)
+      .then(() => {
+        intervalUpdateFeeds(state, watchedState);
+      });
+  };
+
+  const validateForm = (data) => linkSchema.validate(data)
+    .then(() => handleFeedProcessing(data.url))
     .catch((error) => {
       watchedState.error = error.message;
       console.log(error.message);
