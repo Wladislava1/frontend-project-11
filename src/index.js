@@ -14,14 +14,17 @@ export default function rssForm() {
   const getFeedsAndPosts = (url) => fetchRssFeed(url)
     .then((data) => {
       const { titleFeed, descriptionFeed, posts } = parseRssFeed(data.contents);
-      const indexFeed = state.feeds.findIndex((item) => item.url === url);
+      const existingFeed = state.feeds.find((feed) => feed.url === url);
 
-      if (indexFeed !== -1) {
-        state.feeds[indexFeed].title = titleFeed;
-        state.feeds[indexFeed].description = descriptionFeed;
+      if (existingFeed) {
+        existingFeed.title = titleFeed;
+        existingFeed.description = descriptionFeed;
+      } else {
+        const newFeed = createFeed(url, titleFeed, descriptionFeed);
+        state.feeds.push(newFeed);
+        state.posts.unshift(createPost(newFeed.id));
       }
-
-      const feedId = state.feeds[indexFeed].id;
+      const feedId = state.feeds.find((feed) => feed.url === url).id;
       const newPosts = posts.map((post) => createPost(
         feedId,
         post.title,
@@ -33,25 +36,14 @@ export default function rssForm() {
       watchedState.feeds = [...state.feeds];
       watchedState.posts = [...state.posts];
       watchedState.error = 0;
+      intervalUpdateFeeds(state, watchedState);
     })
     .catch((error) => {
       watchedState.error = error.message;
       console.log(error.message);
     });
 
-  const handleFeedProcessing = (url) => {
-    const newFeed = createFeed(url);
-    state.feeds.push(newFeed);
-    state.posts.unshift(createPost(newFeed.id));
-
-    return getFeedsAndPosts(url)
-      .then(() => {
-        intervalUpdateFeeds(state, watchedState);
-      });
-  };
-
   const validateForm = (data) => linkSchema.validate(data)
-    .then(() => handleFeedProcessing(data.url))
     .catch((error) => {
       watchedState.error = error.message;
       console.log(error.message);
@@ -65,6 +57,9 @@ export default function rssForm() {
     const urlInput = document.querySelector('input[id="url-input"]');
     const url = urlInput.value.trim();
     validateForm({ url })
+      .then(() => {
+        getFeedsAndPosts(url);
+      })
       .finally(() => {
         buttonSubmit.disabled = false;
         urlInput.value = '';

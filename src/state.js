@@ -11,11 +11,11 @@ export const initialState = {
   error: null,
 };
 
-export const createFeed = (url) => ({
+export const createFeed = (url, titleFeed, descriptionFeed) => ({
   id: uniqid(),
   url,
-  title: null,
-  description: null,
+  title: titleFeed,
+  description: descriptionFeed,
 });
 
 export const createPost = (feedId, title, description, url) => ({
