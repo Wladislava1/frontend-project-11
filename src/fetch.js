@@ -14,7 +14,7 @@ const fetchWithTimeout = (url, timeout = 10000) => {
 const fetchRssFeed = (url) => fetchWithTimeout(`${PROXY_URL}?url=${encodeURIComponent(url)}&disableCache=true`)
   .then((response) => {
     if (response.ok) {
-      return response.text();
+      return response.json();
     }
     throw new Error(`Ошибка: ${response.status}`);
   })
