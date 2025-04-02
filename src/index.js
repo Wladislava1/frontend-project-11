@@ -3,7 +3,8 @@ import 'bootstrap';
 import initView from './view/index.js';
 import getSchema from './shema.js';
 import { createPost, initialState, createFeed } from './state.js';
-import { fetchRssFeed, parseRssFeed } from './parser.js';
+import parseRssFeed from './parser.js';
+import fetchRssFeed from './fetch.js';
 import intervalUpdateFeeds from './intervalUpdatesFeeds.js';
 
 export default function rssForm() {
