@@ -1,17 +1,20 @@
 import uniqid from 'uniqid';
 
 export const initialState = {
+  addingFeedProcess: {
+    state: 'filling',
+    // filling – ввод данных в поле.
+    // processing – отправка формы, блокировка кнопки и поля.
+    // success – успешная регистрация, кнопка отключается.
+    // failed – ошибка валидации, отображается сообщение.
+    error: null,
+  },
   feeds: [], // id, url, title, description
   posts: [], // id, feedId, title, description, url
-  viewPost: {
-    title: null,
-    description: null,
-    url: null,
-  },
   uiState: {
-    viewedPosts: [],
+    viewedPosts: [], // title description url visibility
+    modalWindow: 'hidden',
   },
-  error: null,
 };
 
 export const createFeed = (url, titleFeed, descriptionFeed) => ({

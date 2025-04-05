@@ -2,6 +2,7 @@ import onChange from 'on-change';
 import {
   renderErr,
   renderFeed,
+  renderInput,
   renderPosts,
   renderWindow,
 } from './render.js';
@@ -16,8 +17,10 @@ export default function initView(state) {
   });
 
   const watchedState = onChange(state, (path) => {
-    if (path === 'error') {
-      renderErr(watchedState.error, i18nInstance);
+    console.log(`Path changed: ${path}`);
+    if (path === 'addingFeedProcess') {
+      renderErr(watchedState.addingFeedProcess, i18nInstance);
+      renderInput(watchedState.addingFeedProcess);
     }
     if (path === 'feeds') {
       renderFeed(watchedState.feeds, i18nInstance);
@@ -25,8 +28,8 @@ export default function initView(state) {
     if (path === 'posts' || path === 'uiState.viewedPosts') {
       renderPosts(watchedState.posts, watchedState.uiState.viewedPosts, i18nInstance);
     }
-    if (path === 'viewPost.title' || path === 'viewPost.description' || path === 'viewPost.url') {
-      renderWindow(watchedState.viewPost);
+    if (path === 'uiState.modalWindow') {
+      renderWindow(watchedState.uiState, i18nInstance);
     }
   });
 

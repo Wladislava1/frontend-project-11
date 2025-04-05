@@ -12,62 +12,58 @@ export default function rssForm() {
   const watchedState = initView(state);
   const linkSchema = getSchema(watchedState);
 
-  const getFeedsAndPosts = (url) => fetchRssFeed(url)
-    .then((data) => {
-      const { titleFeed, descriptionFeed, posts } = parseRssFeed(data.contents);
-      const existingFeed = state.feeds.find((feed) => feed.url === url);
-      console.log(existingFeed);
+  const getFeedsAndPosts = (url) => {
+    watchedState.addingFeedProcess = {
+      ...watchedState.addingFeedProcess,
+      state: 'processing',
+    };
+    return fetchRssFeed(url)
+      .then((data) => {
+        const { titleFeed, descriptionFeed, posts } = parseRssFeed(data.contents);
+        const existingFeed = state.feeds.find((feed) => feed.url === url);
+        console.log(`existingFeed: ${existingFeed}`);
 
-      if (existingFeed) {
-        existingFeed.title = titleFeed;
-        existingFeed.description = descriptionFeed;
-      } else {
-        const newFeed = createFeed(url, titleFeed, descriptionFeed);
-        state.feeds = [...state.feeds, newFeed];
-        state.posts = [createPost(newFeed.id), ...state.posts];
-      }
-      console.log(state.feeds);
-      const feedId = state.feeds.find((feed) => feed.url === url).id;
-      const newPosts = posts.map((post) => createPost(
-        feedId,
-        post.title,
-        post.description,
-        post.url,
-      ));
-
-      state.posts = [...newPosts, ...state.posts];
-      watchedState.feeds = [...state.feeds];
-      watchedState.posts = [...state.posts];
-      watchedState.error = 0;
-      intervalUpdateFeeds(state, watchedState);
-    })
-    .catch((error) => {
-      watchedState.error = error.message;
-      throw error;
-    });
-
+        if (existingFeed) {
+          existingFeed.title = titleFeed;
+          existingFeed.description = descriptionFeed;
+        } else {
+          const newFeed = createFeed(url, titleFeed, descriptionFeed);
+          watchedState.feeds = [...state.feeds, newFeed];
+          watchedState.posts = [createPost(newFeed.id), ...state.posts];
+        }
+        console.log(`state.feeds: ${state.feeds}`);
+        const feedId = state.feeds.find((feed) => feed.url === url).id;
+        const newPosts = posts.map((post) => createPost(
+          feedId,
+          post.title,
+          post.description,
+          post.url,
+        ));
+        watchedState.posts = [...newPosts, ...state.posts];
+        watchedState.addingFeedProcess = { ...watchedState.addingFeedProcess, state: 'success' };
+        intervalUpdateFeeds(state, watchedState);
+      })
+      .catch((error) => {
+        watchedState.addingFeedProcess = { ...watchedState.addingFeedProcess, state: 'failed', error: error.message };
+      });
+  };
   const validateForm = (data) => linkSchema.validate(data)
     .then(() => true)
     .catch((error) => {
-      watchedState.error = error.message;
+      watchedState.addingFeedProcess = { ...watchedState.addingFeedProcess, state: 'failed', error: error.message };
       return false;
     });
 
   const formInput = document.querySelector('.rss-form');
-  const buttonSubmit = formInput.querySelector('button');
   formInput.addEventListener('submit', (e) => {
     e.preventDefault();
-    buttonSubmit.disabled = true;
     const urlInput = document.querySelector('input[id="url-input"]');
     const url = urlInput.value.trim();
     validateForm({ url })
       .then((isValid) => {
         if (!isValid) return;
-        getFeedsAndPosts(url)
-          .finally(() => {
-            buttonSubmit.disabled = false;
-          });
-        urlInput.value = '';
+        watchedState.addingFeedProcess = { ...watchedState.addingFeedProcess, state: 'processing' };
+        getFeedsAndPosts(url);
       });
   });
 
@@ -85,27 +81,31 @@ export default function rssForm() {
     if (foundPost) {
       const isViewed = state.uiState.viewedPosts.some((viewedPost) => viewedPost.url === postUrl);
       if (!isViewed) {
-        state.uiState.viewedPosts = [...state.uiState.viewedPosts, { url: foundPost.url, visibility: 'hidden' }];
+        watchedState.uiState.viewedPosts = [...watchedState.uiState.viewedPosts, {
+          url: foundPost.url,
+          title: foundPost.title,
+          description: foundPost.description,
+          visibility: 'hidden',
+        }];
       }
     }
     if (e.target.classList.contains('btn-sm')) {
-      watchedState.viewPost.title = foundPost.title;
-      watchedState.viewPost.description = foundPost.description;
-      watchedState.viewPost.url = link.getAttribute('href');
+      watchedState.uiState.modalWindow = 'shown';
+      watchedState.uiState = { ...watchedState.uiState };
     }
-    watchedState.uiState.viewedPosts = [...state.uiState.viewedPosts];
   });
 
   const containerShow = document.querySelector('.fade');
-  const textBreak = containerShow.querySelector('.text-break');
   const closeModalButtonText = containerShow.querySelector('.close');
   const closeModalButtonKrest = containerShow.querySelector('.btn-secondary');
   closeModalButtonText.addEventListener('click', (e) => {
     e.preventDefault();
-    textBreak.textContent = '';
+    watchedState.uiState.modalWindow = 'hidden';
+    watchedState.uiState = { ...watchedState.uiState };
   });
   closeModalButtonKrest.addEventListener('click', (e) => {
     e.preventDefault();
-    textBreak.textContent = '';
+    watchedState.uiState.modalWindow = 'hidden';
+    watchedState.uiState = { ...watchedState.uiState };
   });
 }
