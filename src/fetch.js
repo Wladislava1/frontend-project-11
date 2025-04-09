@@ -11,18 +11,22 @@ const fetchWithTimeout = (url, timeout = 10000) => {
   ]);
 };
 
-const fetchRssFeed = (url) => fetchWithTimeout(`${PROXY_URL}?url=${encodeURIComponent(url)}&disableCache=true`)
-  .then((response) => {
-    if (response.ok) {
-      return response.json();
-    }
-    throw new Error(`Ошибка: ${response.status}`);
-  })
-  .catch((error) => {
-    if (error.message === 'NETWORK_ERROR') {
+const fetchRssFeed = (url) => {
+  const proxyUrl = new URL(PROXY_URL);
+  proxyUrl.searchParams.set('url', url);
+  proxyUrl.searchParams.set('disableCache', 'true');
+  return fetchWithTimeout(proxyUrl.toString())
+    .then((response) => {
+      if (response.ok) {
+        return response.json();
+      }
+      throw new Error(`Ошибка: ${response.status}`);
+    })
+    .catch((error) => {
+      if (error.message === 'NETWORK_ERROR') {
+        throw new Error(4);
+      }
       throw new Error(4);
-    }
-    throw new Error(4);
-  });
-
+    });
+};
 export default fetchRssFeed;
