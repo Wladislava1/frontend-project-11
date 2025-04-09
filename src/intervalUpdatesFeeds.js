@@ -20,8 +20,6 @@ const intervalUpdateFeeds = (state, watchedState) => {
       if (uniquePosts.length > 0) {
         state.posts = [...uniquePosts, ...state.posts];
         watchedState.posts = [...state.posts];
-      } else {
-        console.log('Нет новых постов');
       }
     })
     .catch((error) => {

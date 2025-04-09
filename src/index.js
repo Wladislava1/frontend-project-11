@@ -48,7 +48,6 @@ const handleFormSubmit = (e, urlInput, watchedState, state) => {
 
           watchedState.posts = [...newPosts, ...state.posts];
           watchedState.addingFeedProcess = { ...watchedState.addingFeedProcess, state: 'success' };
-          intervalUpdateFeeds(state, watchedState);
         })
         .catch((error) => {
           watchedState.addingFeedProcess = { ...watchedState.addingFeedProcess, state: 'failed', error: error.message };
@@ -114,4 +113,5 @@ export default function rssForm() {
     e.preventDefault();
     handleCloseModal(watchedState);
   });
+  intervalUpdateFeeds(state, watchedState);
 }
