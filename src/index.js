@@ -8,46 +8,11 @@ import parseRssFeed from './parser.js';
 import fetchRssFeed from './fetch.js';
 import intervalUpdateFeeds from './intervalUpdatesFeeds.js';
 
-const getFeed = (url, watchedState, state) => {
-  watchedState.addingFeedProcess = { ...watchedState.addingFeedProcess, state: 'processing' };
-  return fetchRssFeed(url)
-    .then((data) => {
-      const { titleFeed, descriptionFeed, posts } = parseRssFeed(data.contents);
-      const existingFeed = state.feeds.find((feed) => feed.url === url);
-
-      const currentFeed = existingFeed
-        ? { ...existingFeed, title: titleFeed, description: descriptionFeed }
-        : createFeed(url, titleFeed, descriptionFeed);
-
-      if (!existingFeed) {
-        watchedState.feeds = [...state.feeds, currentFeed];
-        watchedState.posts = [createPost(currentFeed.id), ...state.posts];
-      }
-
-      const newPosts = posts.map((post) => createPost(
-        currentFeed.id,
-        post.title,
-        post.description,
-        post.url,
-      ));
-
-      watchedState.posts = [...newPosts, ...state.posts];
-      watchedState.addingFeedProcess = { ...watchedState.addingFeedProcess, state: 'success' };
-      intervalUpdateFeeds(state, watchedState);
-    })
-    .catch((error) => {
-      watchedState.addingFeedProcess = { ...watchedState.addingFeedProcess, state: 'failed', error: error.message };
-    });
-};
-
 const validateForm = (data, watchedState) => {
   const linkSchema = getSchema(watchedState);
   return linkSchema.validate(data)
-    .then(() => true)
-    .catch((error) => {
-      watchedState.addingFeedProcess = { ...watchedState.addingFeedProcess, state: 'failed', error: error.message };
-      return false;
-    });
+    .then(() => ({ isValid: true, validationError: null }))
+    .catch((validationError) => ({ isValid: false, validationError }));
 };
 
 const handleFormSubmit = (e, urlInput, watchedState, state) => {
@@ -55,9 +20,39 @@ const handleFormSubmit = (e, urlInput, watchedState, state) => {
   watchedState.addingFeedProcess = { ...watchedState.addingFeedProcess, state: 'processing' };
   const url = urlInput.value.trim();
   validateForm({ url }, watchedState)
-    .then((isValid) => {
-      if (!isValid) return;
-      getFeed(url, watchedState, state);
+    .then(({ isValid, validationError }) => {
+      if (!isValid) {
+        watchedState.addingFeedProcess = { ...watchedState.addingFeedProcess, state: 'failed', error: validationError.message };
+        return;
+      }
+      fetchRssFeed(url)
+        .then((data) => {
+          const { titleFeed, descriptionFeed, posts } = parseRssFeed(data.contents);
+          const existingFeed = state.feeds.find((feed) => feed.url === url);
+
+          const currentFeed = existingFeed
+            ? { ...existingFeed, title: titleFeed, description: descriptionFeed }
+            : createFeed(url, titleFeed, descriptionFeed);
+
+          if (!existingFeed) {
+            watchedState.feeds = [...state.feeds, currentFeed];
+            watchedState.posts = [createPost(currentFeed.id), ...state.posts];
+          }
+
+          const newPosts = posts.map((post) => createPost(
+            currentFeed.id,
+            post.title,
+            post.description,
+            post.url,
+          ));
+
+          watchedState.posts = [...newPosts, ...state.posts];
+          watchedState.addingFeedProcess = { ...watchedState.addingFeedProcess, state: 'success' };
+          intervalUpdateFeeds(state, watchedState);
+        })
+        .catch((error) => {
+          watchedState.addingFeedProcess = { ...watchedState.addingFeedProcess, state: 'failed', error: error.message };
+        });
     });
 };
 
