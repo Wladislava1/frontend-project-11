@@ -1,15 +1,22 @@
 /* eslint-disable no-param-reassign */
 import './styles.scss';
 import 'bootstrap';
+import * as Yup from 'yup';
 import initView from './view/index.js';
-import getSchema from './shema.js';
 import { createPost, initialState, createFeed } from './state.js';
 import parseRssFeed from './parser.js';
-import fetchRssFeed from './fetch.js';
-import intervalUpdateFeeds from './intervalUpdatesFeeds.js';
+import { fetchRssFeed, intervalUpdateFeeds } from './fetchAndUpdates.js';
 
 const validateForm = (data, watchedState) => {
-  const linkSchema = getSchema(watchedState);
+  const urlsFeed = watchedState.feeds.map((feed) => feed.url);
+
+  const linkSchema = Yup.object().shape({
+    url: Yup.string()
+      .url(1)
+      .required()
+      .notOneOf(urlsFeed, 2),
+  });
+
   return linkSchema.validate(data)
     .then(() => ({ isValid: true, validationError: null }))
     .catch((validationError) => ({ isValid: false, validationError }));
@@ -36,7 +43,7 @@ const handleFormSubmit = (e, urlInput, watchedState, state) => {
 
           if (!existingFeed) {
             watchedState.feeds = [...state.feeds, currentFeed];
-            watchedState.posts = [createPost(currentFeed.id), ...state.posts];
+            watchedState.posts = [currentFeed, ...state.posts];
           }
 
           const newPosts = posts.map((post) => createPost(
@@ -88,30 +95,30 @@ const handleCloseModal = (watchedState) => {
 
 export default function rssForm() {
   const state = initialState;
-  const watchedState = initView(state);
+  initView(state).then((watchedState) => {
+    const formInput = document.querySelector('.rss-form');
+    const urlInput = document.querySelector('input[id="url-input"]');
+    const containerPosts = document.querySelector('.posts');
+    const containerShow = document.querySelector('.fade');
+    const closeModalButtonText = containerShow.querySelector('.close');
+    const closeModalButtonKrest = containerShow.querySelector('.btn-secondary');
 
-  const formInput = document.querySelector('.rss-form');
-  const urlInput = document.querySelector('input[id="url-input"]');
-  const containerPosts = document.querySelector('.posts');
-  const containerShow = document.querySelector('.fade');
-  const closeModalButtonText = containerShow.querySelector('.close');
-  const closeModalButtonKrest = containerShow.querySelector('.btn-secondary');
+    formInput.addEventListener('submit', (e) => handleFormSubmit(
+      e,
+      urlInput,
+      watchedState,
+      state,
+    ));
 
-  formInput.addEventListener('submit', (e) => handleFormSubmit(
-    e,
-    urlInput,
-    watchedState,
-    state,
-  ));
-
-  containerPosts.addEventListener('click', (e) => handlePostClick(e, state, watchedState));
-  closeModalButtonText.addEventListener('click', (e) => {
-    e.preventDefault();
-    handleCloseModal(watchedState);
+    containerPosts.addEventListener('click', (e) => handlePostClick(e, state, watchedState));
+    closeModalButtonText.addEventListener('click', (e) => {
+      e.preventDefault();
+      handleCloseModal(watchedState);
+    });
+    closeModalButtonKrest.addEventListener('click', (e) => {
+      e.preventDefault();
+      handleCloseModal(watchedState);
+    });
+    intervalUpdateFeeds(state, watchedState);
   });
-  closeModalButtonKrest.addEventListener('click', (e) => {
-    e.preventDefault();
-    handleCloseModal(watchedState);
-  });
-  intervalUpdateFeeds(state, watchedState);
 }
