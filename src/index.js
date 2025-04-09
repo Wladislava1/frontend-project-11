@@ -8,33 +8,29 @@ import parseRssFeed from './parser.js';
 import fetchRssFeed from './fetch.js';
 import intervalUpdateFeeds from './intervalUpdatesFeeds.js';
 
-const getFeedsAndPosts = (url, watchedState, state) => {
-  watchedState.addingFeedProcess = {
-    ...watchedState.addingFeedProcess,
-    state: 'processing',
-  };
+const getFeed = (url, watchedState, state) => {
+  watchedState.addingFeedProcess = { ...watchedState.addingFeedProcess, state: 'processing' };
   return fetchRssFeed(url)
     .then((data) => {
       const { titleFeed, descriptionFeed, posts } = parseRssFeed(data.contents);
       const existingFeed = state.feeds.find((feed) => feed.url === url);
-      console.log(`existingFeed: ${existingFeed}`);
 
-      if (existingFeed) {
-        existingFeed.title = titleFeed;
-        existingFeed.description = descriptionFeed;
-      } else {
-        const newFeed = createFeed(url, titleFeed, descriptionFeed);
-        watchedState.feeds = [...state.feeds, newFeed];
-        watchedState.posts = [createPost(newFeed.id), ...state.posts];
+      const currentFeed = existingFeed
+        ? { ...existingFeed, title: titleFeed, description: descriptionFeed }
+        : createFeed(url, titleFeed, descriptionFeed);
+
+      if (!existingFeed) {
+        watchedState.feeds = [...state.feeds, currentFeed];
+        watchedState.posts = [createPost(currentFeed.id), ...state.posts];
       }
-      console.log(`state.feeds: ${state.feeds}`);
-      const feedId = state.feeds.find((feed) => feed.url === url).id;
+
       const newPosts = posts.map((post) => createPost(
-        feedId,
+        currentFeed.id,
         post.title,
         post.description,
         post.url,
       ));
+
       watchedState.posts = [...newPosts, ...state.posts];
       watchedState.addingFeedProcess = { ...watchedState.addingFeedProcess, state: 'success' };
       intervalUpdateFeeds(state, watchedState);
@@ -56,12 +52,12 @@ const validateForm = (data, watchedState) => {
 
 const handleFormSubmit = (e, urlInput, watchedState, state) => {
   e.preventDefault();
+  watchedState.addingFeedProcess = { ...watchedState.addingFeedProcess, state: 'processing' };
   const url = urlInput.value.trim();
   validateForm({ url }, watchedState)
     .then((isValid) => {
       if (!isValid) return;
-      watchedState.addingFeedProcess = { ...watchedState.addingFeedProcess, state: 'processing' };
-      getFeedsAndPosts(url, watchedState, state);
+      getFeed(url, watchedState, state);
     });
 };
 
