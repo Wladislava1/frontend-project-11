@@ -43,7 +43,7 @@ const handleFormSubmit = (e, urlInput, watchedState, state) => {
 
           if (!existingFeed) {
             watchedState.feeds = [...state.feeds, currentFeed];
-            watchedState.posts = [currentFeed, ...state.posts];
+            watchedState.posts = [createPost(currentFeed.id), ...state.posts];
           }
 
           const newPosts = posts.map((post) => createPost(

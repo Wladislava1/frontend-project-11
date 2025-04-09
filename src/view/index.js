@@ -11,14 +11,15 @@ import ru from '../language/ru.js';
 import en from '../language/en.js';
 
 export default function initView(state) {
-  return i18next.createInstance().init({
+  const i18nInstance = i18next.createInstance();
+  return i18nInstance.init({
     lng: 'ru',
     debug: true,
     resources: {
       ru: { translation: ru.translation },
       en: { translation: en.translation },
     },
-  }).then((i18nInstance) => {
+  }).then(() => {
     const watchedState = onChange(state, (path) => {
       if (path === 'addingFeedProcess') {
         renderErr(watchedState.addingFeedProcess, i18nInstance);
@@ -38,5 +39,6 @@ export default function initView(state) {
     return watchedState;
   }).catch((error) => {
     console.error('Ошибка при инициализации i18n:', error);
+    throw error;
   });
 }
